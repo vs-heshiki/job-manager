@@ -12,11 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity(name = "jobs")
 @Data
-public class JobsEntity {
+public class JobEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,6 +31,7 @@ public class JobsEntity {
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
     private CompanyEntity companyEntity;
 
+    @NotNull
     @Column(name = "company_id")
     private UUID companyId;
 
