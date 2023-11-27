@@ -8,15 +8,17 @@ import com.vertu_io.job_manager.modules.candidates.CandidateEntity;
 import com.vertu_io.job_manager.modules.candidates.CandidateRepository;
 
 @Service
-public class CreateCandidateServices {
+public class CreateCandidateService {
 
     @Autowired
     private CandidateRepository candidateRepository;
 
     public CandidateEntity perform(CandidateEntity candidate) {
-        candidateRepository.findByEmailOrUsername(candidate.getEmail(), candidate.getUsername()).ifPresent(user -> {
-            throw new UserAlreadyExistsException();
-        });
+        candidateRepository
+                .findByEmailOrUsername(candidate.getEmail(), candidate.getUsername())
+                .ifPresent(user -> {
+                    throw new UserAlreadyExistsException();
+                });
 
         return this.candidateRepository.save(candidate);
     }
