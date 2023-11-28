@@ -1,5 +1,8 @@
 package com.vertu_io.job_manager.providers;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +18,7 @@ public class JWTProvider {
 
     public String validateToken(String token) {
         token = token.replace("Bearer ", "");
-
-        Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
+        Algorithm algorithm = Algorithm.HMAC256(this.jwtSecret);
         try {
             var getSubject = JWT.require(algorithm)
                     .build()
@@ -27,5 +29,14 @@ public class JWTProvider {
         } catch (JWTVerificationException e) {
             return "";
         }
+    }
+
+    public String createToken(String companyId) {
+        Algorithm algorithm = Algorithm.HMAC256(this.jwtSecret);
+        return JWT.create()
+                .withIssuer("vertuJobs")
+                .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
+                .withSubject(companyId)
+                .sign(algorithm);
     }
 }
