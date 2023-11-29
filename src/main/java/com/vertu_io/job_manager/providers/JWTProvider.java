@@ -9,21 +9,22 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 @Service
 public class JWTProvider {
-    public String validateToken(String token, String jwtSecret) {
+    public DecodedJWT validateToken(String token, String jwtSecret) {
         token = token.replace("Bearer ", "");
         Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
         try {
             var getSubject = JWT.require(algorithm)
                     .build()
-                    .verify(token)
-                    .getSubject();
+                    .verify(token);
 
             return getSubject;
         } catch (JWTVerificationException e) {
-            return "";
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -32,6 +33,7 @@ public class JWTProvider {
         return JWT.create()
                 .withIssuer("vertuJobs")
                 .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
+                .withClaim("roles", Arrays.asList("COMPANY"))
                 .withSubject(companyId)
                 .sign(algorithm);
     }
@@ -41,7 +43,7 @@ public class JWTProvider {
         return JWT.create()
                 .withIssuer("vertuJobs")
                 .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
-                .withClaim("roles", Arrays.asList("candidate"))
+                .withClaim("roles", Arrays.asList("CANDIDATE"))
                 .withSubject(candidateId)
                 .sign(algorithm);
     }

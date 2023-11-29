@@ -1,7 +1,6 @@
 package com.vertu_io.job_manager.security;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,20 +18,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class SecurityFilter extends OncePerRequestFilter {
+public class SecurityCandidateFilter extends OncePerRequestFilter {
 
-    @Value("${security.company.secret.key}")
+    @Value("${security.candidate.secret.key}")
     private String jwtSecret;
 
     @Autowired
-    JWTProvider jwtProvider;
+    private JWTProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
+        var header = request.getHeader("Authorization");
 
-        if (request.getRequestURI().startsWith("/company")) {
+        if (request.getRequestURI().startsWith("/candidate")) {
             if (header != null) {
                 var token = this.jwtProvider.validateToken(header, this.jwtSecret);
 
@@ -41,7 +40,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                request.setAttribute("company_id", token.getSubject());
+                request.setAttribute("candidate_id", token.getSubject());
 
                 var roles = token.getClaim("roles").asList(Object.class);
 
@@ -59,4 +58,5 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 }
